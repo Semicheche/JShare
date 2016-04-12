@@ -13,18 +13,28 @@ import br.dagostini.jshare.comun.IServer;
 
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.GridBagConstraints;
 import javax.swing.JTextField;
 import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -40,6 +50,8 @@ public class Centralizador extends JFrame implements IServer {
 	private JButton btnIniciarServico;
 	private JButton btnPararServico;
 	private JComboBox comboip;
+	private Remote servidor;
+	private Registry registry;
 
 	/**
 	 * Launch the application.
@@ -142,7 +154,68 @@ public class Centralizador extends JFrame implements IServer {
 		btnIniciarServico.setEnabled(false);
 
 		List<String> lista = getIpDisponivel();
+		comboip.setModel(new DefaultComboBoxModel<String>(new Vector<String>(lista)));
+		comboip.setSelectedIndex(0);
+		
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		this.addWindowListener(new WindowAdapter() {
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				fecharTodosClientes();
+			}
+			
+		});
+	
+	}
+	protected void iniciarServico(){
+		
+		String porta = txtporta.getText().trim();
+		
+		
+		if(!porta.matches("[0-9]+") || porta.length() > 5 ){
+			JOptionPane.showMessageDialog(this, "A porta deve ser um valor numérico de no máximo 5 dígitos!");
+			return;
+		}
+		int intPorta = Integer.parseInt(porta);
+		if(intPorta < 1024  || intPorta > 65535){
+			JOptionPane.showMessageDialog(this, "A porta deve estar entre 1024 e 65535");
+			return;
+		}
+		
+		
+		try {
+			
+			servidor = UnicastRemoteObject.exportObject(this, 0);
+			registry = LocateRegistry.createRegistry(intPorta);
+			registry.rebind(NOME_SERVICO, servidor);
+			
+			mostrar("Serivço iniciado.");
+			
+			comboip.setEnabled(false);
+			txtporta.setEnabled(false);
+			btnIniciarServico.setEnabled(false);
+			
+			btnPararServico.setEnabled(true);
+			
+		} catch (RemoteException e) {
+			JOptionPane.showMessageDialog(this, "Erro criando registro, verifique se a porta já não está sendo usada.");
+			e.printStackTrace();
+		}
+		
+		
+		
+	}
 
+	private void mostrar(String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void fecharTodosClientes() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private List<String> getIpDisponivel() {
