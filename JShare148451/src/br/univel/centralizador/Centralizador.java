@@ -23,12 +23,15 @@ import java.awt.event.WindowEvent;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.rmi.NoSuchObjectException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +44,8 @@ import javax.swing.JTextArea;
 import java.awt.Font;
 import java.awt.Color;
 import javax.swing.JComboBox;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Centralizador extends JFrame implements IServer {
 
@@ -50,8 +55,7 @@ public class Centralizador extends JFrame implements IServer {
 	private JButton btnIniciarServico;
 	private JButton btnPararServico;
 	private JComboBox comboip;
-	private Remote servidor;
-	private Registry registry;
+	
 
 	/**
 	 * Launch the application.
@@ -128,6 +132,11 @@ public class Centralizador extends JFrame implements IServer {
 		txtporta.setColumns(10);
 
 		btnIniciarServico = new JButton("Iniciar Serviço");
+		btnIniciarServico.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				iniciarServico();
+			}
+		});
 		GridBagConstraints gbc_btnIniciarServico = new GridBagConstraints();
 		gbc_btnIniciarServico.insets = new Insets(0, 0, 0, 5);
 		gbc_btnIniciarServico.gridx = 4;
@@ -135,6 +144,11 @@ public class Centralizador extends JFrame implements IServer {
 		panel.add(btnIniciarServico, gbc_btnIniciarServico);
 
 		btnPararServico = new JButton("Parar Serviço");
+		btnPararServico.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pararServico();
+			}
+		});
 		GridBagConstraints gbc_btnPararServico = new GridBagConstraints();
 		gbc_btnPararServico.gridx = 5;
 		gbc_btnPararServico.gridy = 0;
@@ -144,14 +158,27 @@ public class Centralizador extends JFrame implements IServer {
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 
 		txtarea = new JTextArea();
+		txtarea.setForeground(new Color(51, 204, 0));
 		txtarea.setFont(new Font("Monospaced", Font.PLAIN, 13));
-		txtarea.setBackground(Color.WHITE);
+		txtarea.setBackground(Color.BLACK);
 		scrollPane.setViewportView(txtarea);
 	}
+	
+	/**
+	 * =======================================
+	 * 
+	 * Metodos implementados
+	 * 
+	 * =======================================
+	 */
+	
+	private Remote servidor;
+	private Registry registry;
+	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy H:mm:ss:SSS");
 
 	protected void configurar() {
 
-		btnIniciarServico.setEnabled(false);
+		btnIniciarServico.setEnabled(true);
 
 		List<String> lista = getIpDisponivel();
 		comboip.setModel(new DefaultComboBoxModel<String>(new Vector<String>(lista)));
@@ -207,14 +234,40 @@ public class Centralizador extends JFrame implements IServer {
 		
 		
 	}
+	
+	public void pararServico(){
+		mostrar("SERVIDOR PARANDO O SERVIÇO.");
+		
+	//	fecharTodosCLientes();
+		
+		try {
+			UnicastRemoteObject.unexportObject(this, true);
+			UnicastRemoteObject.unexportObject(registry, true);
+		} catch (NoSuchObjectException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		comboip.setEnabled(true);
+		txtporta.setEnabled(true);
+		btnIniciarServico.setEnabled(true);
+		
+		btnPararServico.setEnabled(false);
+		
+		mostrar("Serviço Encerrado.");
+		
+	}
 
 	private void mostrar(String string) {
-		// TODO Auto-generated method stub
+		txtarea.append(sdf.format(new Date()));
+		txtarea.append(" -> ");
+		txtarea.append(string);
+		txtarea.append("\n");
 		
 	}
 
 	protected void fecharTodosClientes() {
-		// TODO Auto-generated method stub
+		mostrar("DESCONECTANDO TODOS OS CLIENTES.");
 		
 	}
 
@@ -259,7 +312,8 @@ public class Centralizador extends JFrame implements IServer {
 
 	@Override
 	public void registrarCliente(Cliente c) throws RemoteException {
-		// TODO Auto-generated method stub
+		mostrar("Se Registrou.");
+		
 
 	}
 
