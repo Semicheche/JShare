@@ -15,11 +15,17 @@ import java.awt.Insets;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JMenuBar;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-public class Cliente extends JFrame {
+public class TelaCliente extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
+	private JTextField txtpesquisa;
 	private JTable table;
 
 	/**
@@ -29,7 +35,7 @@ public class Cliente extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Cliente frame = new Cliente();
+					TelaCliente frame = new TelaCliente();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -41,9 +47,27 @@ public class Cliente extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Cliente() {
+	public TelaCliente() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 648, 358);
+		
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		JMenu mnConectar = new JMenu("Configurações");
+		menuBar.add(mnConectar);
+		
+		JMenuItem mntmIniciar = new JMenuItem("Iniciar");
+		mntmIniciar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ConfigIniciar config = new ConfigIniciar();
+				config.setVisible(true);
+			}
+		});
+		mnConectar.add(mntmIniciar);
+		
+		JMenuItem mntmConectar = new JMenuItem("Conectar");
+		mnConectar.add(mntmConectar);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -52,33 +76,27 @@ public class Cliente extends JFrame {
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.NORTH);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{0, 0, 0};
-		gbl_panel.rowHeights = new int[]{0, 0, 0};
-		gbl_panel.columnWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
+		gbl_panel.columnWidths = new int[]{31, 0, 0, 0, 0, 0};
+		gbl_panel.rowHeights = new int[]{0, 0};
+		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
-		textField = new JTextField();
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 5);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 0;
-		gbc_textField.gridy = 0;
-		panel.add(textField, gbc_textField);
-		textField.setColumns(10);
+		txtpesquisa = new JTextField();
+		GridBagConstraints gbc_txtpesquisa = new GridBagConstraints();
+		gbc_txtpesquisa.gridwidth = 4;
+		gbc_txtpesquisa.insets = new Insets(0, 0, 0, 5);
+		gbc_txtpesquisa.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtpesquisa.gridx = 0;
+		gbc_txtpesquisa.gridy = 0;
+		panel.add(txtpesquisa, gbc_txtpesquisa);
+		txtpesquisa.setColumns(10);
 		
 		JButton btnPerquisar = new JButton("Perquisar");
 		GridBagConstraints gbc_btnPerquisar = new GridBagConstraints();
-		gbc_btnPerquisar.insets = new Insets(0, 0, 5, 0);
-		gbc_btnPerquisar.gridx = 1;
+		gbc_btnPerquisar.gridx = 4;
 		gbc_btnPerquisar.gridy = 0;
 		panel.add(btnPerquisar, gbc_btnPerquisar);
-		
-		JButton btnIniciar = new JButton("Iniciar");
-		GridBagConstraints gbc_btnIniciar = new GridBagConstraints();
-		gbc_btnIniciar.gridx = 1;
-		gbc_btnIniciar.gridy = 1;
-		panel.add(btnIniciar, gbc_btnIniciar);
 		
 		JPanel panel_1 = new JPanel();
 		contentPane.add(panel_1, BorderLayout.CENTER);

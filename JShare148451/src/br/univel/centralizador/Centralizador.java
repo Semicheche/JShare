@@ -196,7 +196,7 @@ public class Centralizador extends JFrame implements IServer {
 		});
 	
 	}
-	protected void iniciarServico(){
+	public void iniciarServico(){
 		
 		String porta = txtporta.getText().trim();
 		
@@ -271,7 +271,7 @@ public class Centralizador extends JFrame implements IServer {
 		
 	}
 
-	private List<String> getIpDisponivel() {
+	public List<String> getIpDisponivel() {
 
 		List<String> listIp = new ArrayList<String>();
 
