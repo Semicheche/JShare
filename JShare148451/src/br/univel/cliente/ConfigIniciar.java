@@ -172,6 +172,8 @@ public class ConfigIniciar extends JDialog {
 			
 			Cliente c = new Cliente();
 			
+			//servidor.publicarListaArquivos(c,);
+			
 			
 		} catch (RemoteException e) {
 			e.printStackTrace();
