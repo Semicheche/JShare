@@ -31,11 +31,15 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -81,7 +85,7 @@ public class Centralizador extends JFrame implements IServer {
 	 */
 	public Centralizador() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 549, 300);
+		setBounds(100, 100, 718, 418);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -123,6 +127,7 @@ public class Centralizador extends JFrame implements IServer {
 		panel.add(lblPorta, gbc_lblPorta);
 
 		txtporta = new JTextField();
+		txtporta.setText("1818");
 		GridBagConstraints gbc_txtporta = new GridBagConstraints();
 		gbc_txtporta.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtporta.insets = new Insets(0, 0, 0, 5);
@@ -175,7 +180,10 @@ public class Centralizador extends JFrame implements IServer {
 	private Remote servidor;
 	private Registry registry;
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy H:mm:ss:SSS");
-
+	private Map<Cliente, List<Arquivo>> arquivosDosClientes = new HashMap<>();
+	
+	
+	
 	protected void configurar() {
 
 		btnIniciarServico.setEnabled(true);
@@ -312,21 +320,20 @@ public class Centralizador extends JFrame implements IServer {
 
 	@Override
 	public void registrarCliente(Cliente c) throws RemoteException {
-		mostrar("Se Registrou.");
-		
+		mostrar(c.getNome()+" => Se Registrou com o IP:"+c.getIp() +":"+c.getPorta());		
 
 	}
 
 	@Override
 	public void publicarListaArquivos(Cliente c, List<Arquivo> lista) throws RemoteException {
-		// TODO Auto-generated method stub
-
+		mostrar(c.getNome() + " => Publicou " + lista.size() + " Arquivo(s): " + lista +"\n" );
+		arquivosDosClientes.put(c, lista);
 	}
 
 	@Override
 	public Map<Cliente, List<Arquivo>> procurarArquivo(String nome) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return arquivosDosClientes;
 	}
 
 	@Override
@@ -337,7 +344,7 @@ public class Centralizador extends JFrame implements IServer {
 
 	@Override
 	public void desconectar(Cliente c) throws RemoteException {
-		// TODO Auto-generated method stub
+		mostrar(c.getNome()+ " => Desconectou-se");
 
 	}
 

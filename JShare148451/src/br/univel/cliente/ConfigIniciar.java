@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.Vector;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.rmi.AccessException;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -33,14 +35,20 @@ import java.awt.event.ActionEvent;
 
 public class ConfigIniciar extends JDialog {
 
+	/**
+	 * @author luciano
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txtPorta;
 	private JComboBox comboIp;
 	private Registry registry;
 	private String host;
-	Centralizador servidor;
+	Remote servidor;
 	private JTextField txtnome;
-	
+
+
 	/**
 	 * Launch the application.
 	 */
@@ -49,26 +57,26 @@ public class ConfigIniciar extends JDialog {
 			ConfigIniciar dialog = new ConfigIniciar();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
-			dialog.configurar();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-
 	/**
 	 * Create the dialog.
 	 */
 	public ConfigIniciar() {
+		
+
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		GridBagLayout gbl_contentPanel = new GridBagLayout();
-		gbl_contentPanel.columnWidths = new int[]{29, 0, 38, 0, 0};
-		gbl_contentPanel.rowHeights = new int[]{0, 0, 0, 0};
-		gbl_contentPanel.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_contentPanel.columnWidths = new int[] { 29, 0, 38, 0, 0 };
+		gbl_contentPanel.rowHeights = new int[] { 0, 0, 0, 0 };
+		gbl_contentPanel.columnWeights = new double[] { 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_contentPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		contentPanel.setLayout(gbl_contentPanel);
 		{
 			JLabel lblConfiguraeDeConexes = new JLabel("Configuraçõe de Conexão");
@@ -141,7 +149,8 @@ public class ConfigIniciar extends JDialog {
 				JButton okButton = new JButton("Conectar");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-					 iniciarServico();
+							
+						iniciarServico();						
 					}
 				});
 				okButton.setActionCommand("OK");
@@ -150,48 +159,52 @@ public class ConfigIniciar extends JDialog {
 			}
 			{
 				JButton cancelButton = new JButton("Cancel");
+				cancelButton.addActionListener(new ActionListener() {
+		
+					public void actionPerformed(ActionEvent e) {
+						dispose();
+					}
+				});
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
 			}
 		}
+		configurar();
 	}
-	
-	protected void iniciarServico() {
-		
+
+
+	protected void iniciarServico(){
+
 		String strPorta = txtPorta.getText();
-		
+
 		if (!strPorta.matches("[0-9]+") || strPorta.length() > 5) {
 			JOptionPane.showMessageDialog(this, "A porta deve ser um valor numérico de no máximo 5 dígitos!");
 			return;
 		}
-		
+
 		int intPorta = Integer.parseInt(strPorta);
-		try {
-			registry = LocateRegistry.getRegistry(host, intPorta);
-			servidor = (Centralizador) registry.lookup(IServer.NOME_SERVICO);
-			
-			Cliente c = new Cliente();
-			
-			//servidor.publicarListaArquivos(c,);
-			
-			
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			e.printStackTrace();
+
+			try {
+				registry = LocateRegistry.getRegistry(host, intPorta);
+				servidor = registry.lookup(IServer.NOME_SERVICO);
+
+				
+				// servidor.publicarListaArquivos(c,);
+
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (NotBoundException e) {
+				e.printStackTrace();
+			}
 		}
-		
-		
-	}
 
 
 	private void configurar() {
-				
+
 		List<String> listIp = new Centralizador().getIpDisponivel();
 		comboIp.setModel(new DefaultComboBoxModel<String>(new Vector<String>(listIp)));
 		comboIp.setSelectedIndex(0);
-		
-		
+
 	}
 
 }
