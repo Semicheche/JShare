@@ -55,6 +55,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.Choice;
 import javax.swing.JSpinner;
+import javax.swing.ImageIcon;
 
 public class TelaCliente extends JFrame implements IServer {
 
@@ -74,6 +75,7 @@ public class TelaCliente extends JFrame implements IServer {
 	private JLabel lblNome;
 	Cliente c = new Cliente();
 	private Collection<List<Arquivo>> listArquivos;
+	private JButton btnBaixarArquivo;
 
 	/**
 	 * Launch the application.
@@ -107,9 +109,9 @@ public class TelaCliente extends JFrame implements IServer {
 		contentPane.add(panel, BorderLayout.NORTH);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] { 0, 0, 42, 0, 0, 0, 0 };
-		gbl_panel.rowHeights = new int[] { 0, 0, 0, 0, 0 };
+		gbl_panel.rowHeights = new int[] { 0, 0, 0, 0, 0, 0 };
 		gbl_panel.columnWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
-		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
+		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
 		lblNome = new JLabel("Nome");
@@ -190,14 +192,7 @@ public class TelaCliente extends JFrame implements IServer {
 
 		txtpesquisa = new JTextField();
 		txtpesquisa.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-						
-			}
-			@Override
-			public void keyReleased(KeyEvent e) {
-				pesquisa();		
-			}
+			
 		});
 		txtpesquisa.setEnabled(false);
 		txtpesquisa.setEditable(false);
@@ -210,12 +205,30 @@ public class TelaCliente extends JFrame implements IServer {
 		panel.add(txtpesquisa, gbc_txtpesquisa);
 		txtpesquisa.setColumns(10);
 
-		btnPerquisar = new JButton("Perquisar");
+		btnPerquisar = new JButton("Pesquisar");
+		btnPerquisar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pesquisa();
+			}
+		});
 		GridBagConstraints gbc_btnPerquisar = new GridBagConstraints();
 		gbc_btnPerquisar.insets = new Insets(0, 0, 5, 0);
 		gbc_btnPerquisar.gridx = 5;
 		gbc_btnPerquisar.gridy = 2;
 		panel.add(btnPerquisar, gbc_btnPerquisar);
+		
+		btnBaixarArquivo = new JButton("Baixar Arquivo");
+		btnBaixarArquivo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		GridBagConstraints gbc_btnBaixarArquivo = new GridBagConstraints();
+		gbc_btnBaixarArquivo.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnBaixarArquivo.gridwidth = 2;
+		gbc_btnBaixarArquivo.insets = new Insets(0, 0, 5, 0);
+		gbc_btnBaixarArquivo.gridx = 4;
+		gbc_btnBaixarArquivo.gridy = 3;
+		panel.add(btnBaixarArquivo, gbc_btnBaixarArquivo);
 
 		JPanel panel_1 = new JPanel();
 		contentPane.add(panel_1, BorderLayout.CENTER);
@@ -247,10 +260,12 @@ public class TelaCliente extends JFrame implements IServer {
 							nomedoArquivo = list.get(i).getNome();
 							if(txtpesquisa.getText().isEmpty())
 								return;
-							if (nome.equals(nomedoArquivo.substring(0, nome.length()-1))) 
+							if (nome.equals(nomedoArquivo.substring(0, nome.length()))) 
 								txtpesquisa.getDocument().insertString(txtpesquisa.getCaretPosition(), nomedoArquivo.toString().substring(nome.length(), nomedoArquivo.length()) , null);
-														
+								
+						
 						}
+							
 					}
 						
 			
