@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.text.BadLocationException;
 
 import br.dagostini.jshare.comum.pojos.Arquivo;
@@ -13,6 +14,7 @@ import br.dagostini.jshare.comum.pojos.Diretorio;
 import br.dagostini.jshare.comun.Cliente;
 import br.dagostini.jshare.comun.IServer;
 import br.univel.centralizador.Centralizador;
+import br.univel.model.Model;
 
 import javax.swing.JTextField;
 import java.awt.FlowLayout;
@@ -76,6 +78,8 @@ public class TelaCliente extends JFrame implements IServer {
 	Cliente c = new Cliente();
 	private Collection<List<Arquivo>> listArquivos;
 	private JButton btnBaixarArquivo;
+	Model model = new Model() {
+	};
 
 	/**
 	 * Launch the application.
@@ -218,6 +222,7 @@ public class TelaCliente extends JFrame implements IServer {
 		panel.add(btnPerquisar, gbc_btnPerquisar);
 		
 		btnBaixarArquivo = new JButton("Baixar Arquivo");
+		btnBaixarArquivo.setEnabled(false);
 		btnBaixarArquivo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -239,6 +244,7 @@ public class TelaCliente extends JFrame implements IServer {
 
 		table = new JTable();
 		scrollPane.setViewportView(table);
+		table.setModel(model);
 	}
 
 	protected void pesquisa() {
@@ -281,7 +287,7 @@ public class TelaCliente extends JFrame implements IServer {
 			}
 		}).start();
 		
-		
+		btnBaixarArquivo.setEnabled(true);
 	}	
 
 	protected void desconectar() {
