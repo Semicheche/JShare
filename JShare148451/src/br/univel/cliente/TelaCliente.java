@@ -7,13 +7,16 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.text.BadLocationException;
 
 import br.dagostini.jshare.comum.pojos.Arquivo;
 import br.dagostini.jshare.comum.pojos.Diretorio;
+import br.dagostini.jshare.comum.pojos.Download;
 import br.dagostini.jshare.comun.Cliente;
 import br.dagostini.jshare.comun.IServer;
 import br.univel.centralizador.Centralizador;
+import br.univel.model.BarraCellRender;
 import br.univel.model.Model;
 
 import javax.swing.JTextField;
@@ -52,10 +55,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.Choice;
+import java.awt.Component;
+
 import javax.swing.JSpinner;
 import javax.swing.ImageIcon;
 
@@ -63,7 +69,6 @@ public class TelaCliente extends JFrame implements IServer {
 
 	private JPanel contentPane;
 	private JTextField txtpesquisa;
-	private JTable table;
 	private IServer servidor;
 	private Registry registry;
 	private JButton btnPerquisar;
@@ -78,8 +83,9 @@ public class TelaCliente extends JFrame implements IServer {
 	Cliente c = new Cliente();
 	private Collection<List<Arquivo>> listArquivos;
 	private JButton btnBaixarArquivo;
-	Model model = new Model() {
+	private Model model = new Model() {
 	};
+	private JTable table;
 
 	/**
 	 * Launch the application.
@@ -225,6 +231,7 @@ public class TelaCliente extends JFrame implements IServer {
 		btnBaixarArquivo.setEnabled(false);
 		btnBaixarArquivo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				baixarArquivo();
 			}
 		});
 		GridBagConstraints gbc_btnBaixarArquivo = new GridBagConstraints();
@@ -242,9 +249,36 @@ public class TelaCliente extends JFrame implements IServer {
 		JScrollPane scrollPane = new JScrollPane();
 		panel_1.add(scrollPane, BorderLayout.CENTER);
 
-		table = new JTable();
+		TableCellRenderer barra = new BarraCellRender();
+		
+		table = new JTable(model){
+
+			public TableCellRenderer getCellRenderer(int row, int column) {
+				if(column == 2) return barra;
+				
+				return super.getCellRenderer(row, column);
+			};
+		};
+		
+		
 		scrollPane.setViewportView(table);
-		table.setModel(model);
+		//table.setModel(model);
+		
+	}
+
+	protected void baixarArquivo() {
+		ArrayList<Arquivo> lista = new ArrayList<>();
+		Download download = new Download();
+		Arquivo arquivo;
+	
+		for (Arquivo arq : lista) {
+			if(arq.getNome().equals(txtpesquisa)){
+				arquivo = arq;
+			}
+				
+		}
+	
+		
 	}
 
 	protected void pesquisa() {
