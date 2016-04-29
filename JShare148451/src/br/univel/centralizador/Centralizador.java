@@ -53,6 +53,10 @@ import java.awt.event.ActionEvent;
 
 public class Centralizador extends JFrame implements IServer {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField txtporta;
 	private JTextArea txtarea;
