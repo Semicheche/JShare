@@ -1,11 +1,15 @@
 package br.dagostini.jshare.comum.pojos;
 
+import java.awt.Component;
+
 public class Download {
 	
 	private String origem;
 	private String destino;
 	private float porgresso;
 	private String ip;
+	private Component buttom;
+	
 	public String getOrigem() {
 		return origem;
 	}
@@ -29,6 +33,12 @@ public class Download {
 	}
 	public void setIp(String ip) {
 		this.ip = ip;
+	}
+	public Component getButtom() {
+		return buttom;
+	}
+	public void setButtom(Component buttom) {
+		this.buttom = buttom;
 	}
 
 }

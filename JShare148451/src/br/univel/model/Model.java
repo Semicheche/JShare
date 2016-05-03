@@ -1,16 +1,27 @@
 package br.univel.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
+
 import br.dagostini.jshare.comum.pojos.Download;
 
-public abstract class Model extends AbstractTableModel {
+public class Model extends AbstractTableModel {
 
-	ArrayList<Download> lista = new ArrayList<>();
+	List<Object> lista;
+	
+	public Model(){
+		
+	}
+	
+	public Model(List list) {
+		lista = list;
+	}
+	
 	@Override
 	public int getRowCount() {
-		return lista.size();
+		return 1;
 	}
 
 	@Override
@@ -29,6 +40,8 @@ public abstract class Model extends AbstractTableModel {
 			return "Progesso";
 		case 3:
 			return "Arquivo";
+		case 4:
+			return "Opção";
 
 		default:
 			return"Erro";
@@ -40,13 +53,15 @@ public abstract class Model extends AbstractTableModel {
 		
 		switch (columnIndex) {
 		case 0:
-			return lista.get(rowIndex).getOrigem();
+			return "";
 		case 1:
-			return lista.get(rowIndex).getIp();
+			return "";
 		case 2:
-			return lista.get(rowIndex).getPorgresso();
+			return "";
 		case 3:
-			return lista.get(rowIndex).getDestino();
+			return "";
+		case 4:
+			return "";
 
 		default:
 			return"Erro";
