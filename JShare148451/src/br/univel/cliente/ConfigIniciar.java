@@ -128,7 +128,7 @@ public class ConfigIniciar extends JDialog {
 			contentPanel.add(lblNewLabel, gbc_lblNewLabel);
 		}
 		{
-			lblUpload = new JLabel("C:\\\\Uploald");
+			lblUpload = new JLabel("C:\\Uploald");
 			GridBagConstraints gbc_lblUpload = new GridBagConstraints();
 			gbc_lblUpload.anchor = GridBagConstraints.WEST;
 			gbc_lblUpload.insets = new Insets(0, 0, 5, 5);
