@@ -24,7 +24,6 @@ public class ListarArquivos {
 		
 		
 		File dirStart = new File(Configure.getInstance().getDestinoUpload());
-		
 		List<Diretorio> listaDiretorios = new ArrayList<>();
 		for (File file : dirStart.listFiles()) {
 			if (file.isFile()) {
@@ -43,7 +42,7 @@ public class ListarArquivos {
 	}
 	
 	public File pegarArquivo(String nome){
-		return new File("C:\\Upload\\"+ nome);
+		return new File(Configure.getInstance().getDestinoUpload()+"\\"+ nome);
 	}
 	
 }

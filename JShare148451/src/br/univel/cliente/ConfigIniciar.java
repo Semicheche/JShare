@@ -66,19 +66,14 @@ public class ConfigIniciar extends JDialog {
 			ConfigIniciar dialog = new ConfigIniciar();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
-			dialog.configurar(list);
+			dialog.configurar();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
-	private void configurar(ArrayList<Configure> list) {
-		for (Configure obj : list) {
-			txtdonwload.setText(obj.getDestinoDownload());
-			txtupload.setText(obj.getDestinoUpload());
-		}
 		
-	}
+
+	
 
 	/**
 	 * Create the dialog.
@@ -128,7 +123,7 @@ public class ConfigIniciar extends JDialog {
 			contentPanel.add(lblNewLabel, gbc_lblNewLabel);
 		}
 		{
-			lblUpload = new JLabel("C:\\Uploald");
+			lblUpload = new JLabel("C:\\\\JShare\\\\Upload");
 			GridBagConstraints gbc_lblUpload = new GridBagConstraints();
 			gbc_lblUpload.anchor = GridBagConstraints.WEST;
 			gbc_lblUpload.insets = new Insets(0, 0, 5, 5);
@@ -146,8 +141,8 @@ public class ConfigIniciar extends JDialog {
 		}
 		{
 			txtupload = new JTextField("");
-			txtupload.setEditable(false);
 			txtupload.setEnabled(false);
+			txtupload.setEditable(false);
 			GridBagConstraints gbc_txtupload = new GridBagConstraints();
 			gbc_txtupload.gridwidth = 3;
 			gbc_txtupload.insets = new Insets(0, 0, 5, 0);
@@ -167,7 +162,7 @@ public class ConfigIniciar extends JDialog {
 			contentPanel.add(lblNewLabel_2, gbc_lblNewLabel_2);
 		}
 		{
-			lblDownload = new JLabel("C:\\\\Donwload");
+			lblDownload = new JLabel("C:\\\\JShare\\\\Download");
 			GridBagConstraints gbc_lblDownload = new GridBagConstraints();
 			gbc_lblDownload.anchor = GridBagConstraints.WEST;
 			gbc_lblDownload.insets = new Insets(0, 0, 5, 5);
@@ -185,8 +180,8 @@ public class ConfigIniciar extends JDialog {
 		}
 		{
 			txtdonwload = new JTextField();
-			txtdonwload.setEnabled(false);
 			txtdonwload.setEditable(false);
+			txtdonwload.setEnabled(false);
 			GridBagConstraints gbc_txtdonwload = new GridBagConstraints();
 			gbc_txtdonwload.gridwidth = 3;
 			gbc_txtdonwload.insets = new Insets(0, 0, 5, 0);
@@ -223,26 +218,31 @@ public class ConfigIniciar extends JDialog {
 				buttonPane.add(cancelButton);
 			}
 		}
-		
 	
+		configurar();
 	}
 
+	private void configurar() {
+	
+		upload = lblUpload.getText();	
+		download = lblDownload.getText();
+		txtdonwload.setText(download);
+		
+	}
 
 	public void aplicarConfiguracoes() {
 				
 		Configure conf = Configure.getInstance();
-		if(!txtupload.equals(null))
-			upload = lblUpload.getText();
-		else
-			upload = txtupload.getText();
 		
-		if(!txtdonwload.equals(null))
-			download = lblDownload.getText();
-		else
-			download = txtdonwload.getText();
-			
+		
+		download = txtdonwload.getText();
+		upload = txtupload.getText();	
+		
 		conf.setDestinoUpload(upload);
 		conf.setDestinoDownload(download);
+	
+		
+		ablilitarEdicaoPastas();
 		
 	}
 

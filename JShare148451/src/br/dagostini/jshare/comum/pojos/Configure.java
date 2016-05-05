@@ -4,6 +4,7 @@ public class Configure {
 	private static Configure conf;
 	static String destinoUpload;
 	static String destinoDownload;
+	public boolean checked;
 	
 	private Configure(){
 		

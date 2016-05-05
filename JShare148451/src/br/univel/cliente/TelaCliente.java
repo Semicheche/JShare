@@ -293,7 +293,7 @@ public class TelaCliente extends JFrame implements IServer {
 		byte[] dados = mda.leia(la.pegarArquivo(nomeArquivo));
 		
 		//escreva o arquivo no local selecionado
-		mda.escreva(new File(local.get(0).getDestinoDownload()+"\\Copia de Cliente "+ nomeArquivo), dados);
+		mda.escreva(new File(Configure.getInstance().getDestinoDownload()+"\\Copia de Cliente "+ nomeArquivo), dados);
 		
 		JOptionPane.showMessageDialog(rootPane, "Download Concluido!!!");
 	}
@@ -323,7 +323,6 @@ public class TelaCliente extends JFrame implements IServer {
 		ConfigIniciar conf = new ConfigIniciar();
 		
 		conf.aplicarConfiguracoes();
-		System.out.println(Configure.getInstance().getDestinoUpload());
 		btnPerquisar.setEnabled(false);
 
 		List<String> listIp = new Centralizador().getIpDisponivel();
@@ -415,8 +414,10 @@ public class TelaCliente extends JFrame implements IServer {
 
 	@Override
 	public Map<Cliente, List<Arquivo>> procurarArquivo(String nome) throws RemoteException {
-		
+		if(nome.equals(arquivosDosClientes.values()))
+			return arquivosDosClientes;
 		return arquivosDosClientes;
+		
 	}
 
 	@Override
