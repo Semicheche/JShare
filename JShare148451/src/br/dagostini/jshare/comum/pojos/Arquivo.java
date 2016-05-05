@@ -6,15 +6,15 @@ public class Arquivo implements Serializable {
 
 	private static final long serialVersionUID = 8077295408159335912L;
 	
-	private String nome;
+	private String nomeArquivo;
 	private long tamanho;
 
-	public String getNome() {
-		return nome;
+	public String getNomeArquivo() {
+		return nomeArquivo;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setNomeArquivo(String nome) {
+		this.nomeArquivo = nome;
 	}
 
 	public long getTamanho() {
@@ -28,6 +28,6 @@ public class Arquivo implements Serializable {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return nome+" - "+tamanho;
+		return nomeArquivo+" - "+tamanho;
 	}
 }

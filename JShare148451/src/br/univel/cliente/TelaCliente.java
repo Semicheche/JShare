@@ -7,8 +7,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
+import javax.xml.stream.events.StartDocument;
 
 import br.dagostini.jshare.comum.pojos.Arquivo;
+import br.dagostini.jshare.comum.pojos.Configure;
+import br.dagostini.jshare.comum.pojos.Download;
 import br.dagostini.jshare.comun.Cliente;
 import br.dagostini.jshare.comun.IServer;
 import br.univel.centralizador.Centralizador;
@@ -18,7 +21,7 @@ import br.univel.utils.ListarArquivos;
 import br.univel.utils.ManipuladorDeArquivos;
 
 import javax.swing.JTextField;
-
+import javax.sql.rowset.serial.SerialArray;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import java.awt.GridBagLayout;
@@ -38,6 +41,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,8 +49,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.Map.Entry;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 public class TelaCliente extends JFrame implements IServer {
 
@@ -73,8 +83,10 @@ public class TelaCliente extends JFrame implements IServer {
 	private Remote centralizador;
 	private IServer cliente;
 	private IServer servidor;
-	
 	private List<Arquivo> listaArquivos = new ArrayList<>();
+	ArrayList<Configure> local; 
+	
+
 	/**
 	 * Launch the application.
 	 */
@@ -94,12 +106,27 @@ public class TelaCliente extends JFrame implements IServer {
 
 	/**
 	 * Create the frame.
+	 * @throws RemoteException 
 	 */
-	public TelaCliente() {
-	
-		
+	public TelaCliente() throws RemoteException {
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 648, 358);
+		
+		menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		mnNewMenu = new JMenu("Configurar");
+		menuBar.add(mnNewMenu);
+		
+		mntmConfigurar = new JMenuItem("Configurar");
+		mntmConfigurar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ConfigIniciar DialogConfig = new ConfigIniciar();
+				DialogConfig.setVisible(true);
+			}
+		});
+		mnNewMenu.add(mntmConfigurar);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -191,8 +218,12 @@ public class TelaCliente extends JFrame implements IServer {
 		panel.add(btnDesconectar, gbc_btnDesconectar);
 
 		txtpesquisa = new JTextField();
+		txtpesquisa.setText("andes.jpg");
 		txtpesquisa.addKeyListener(new KeyAdapter() {
-			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				//pesquisa(nome);
+			}
 		});
 		txtpesquisa.setEnabled(false);
 		txtpesquisa.setEditable(false);
@@ -208,7 +239,9 @@ public class TelaCliente extends JFrame implements IServer {
 		btnPerquisar = new JButton("Pesquisar");
 		btnPerquisar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				pesquisa();
+				String nome = txtpesquisa.getText();
+				btnBaixarArquivo.setEnabled(true);
+				//pesquisa(nome);
 			}
 		});
 		GridBagConstraints gbc_btnPerquisar = new GridBagConstraints();
@@ -240,21 +273,33 @@ public class TelaCliente extends JFrame implements IServer {
 		panel_1.add(scrollPane, BorderLayout.CENTER);
 
 		TableCellRenderer barra = new BarraCellRender();
-		Model model = new Model();
+	
 		table = new JTable();
 		scrollPane.setViewportView(table);
-		table.setModel(model);
+		//table.setModel(model);
 
 	}
 
 	protected void baixarArquivo() {
-		
-	
-	}				
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy H:mm:ss:SSS");
 				
+		ManipuladorDeArquivos mda = new ManipuladorDeArquivos();
+		ListarArquivos la = new ListarArquivos();
+						
+		//no pesquisado
+		String nomeArquivo = txtpesquisa.getText();
+				
+		//retorna arrays de dados do arquivo pesquisado pelo cliente
+		byte[] dados = mda.leia(la.pegarArquivo(nomeArquivo));
+		
+		//escreva o arquivo no local selecionado
+		mda.escreva(new File(local.get(0).getDestinoDownload()+"\\Copia de Cliente "+ nomeArquivo), dados);
+		
+		JOptionPane.showMessageDialog(rootPane, "Download Concluido!!!");
+	}
 
 	protected void pesquisa() {
-		
+	
 	}
 
 	protected void desconectar() {
@@ -275,7 +320,10 @@ public class TelaCliente extends JFrame implements IServer {
 	}
 
 	protected void configurar() {
-
+		ConfigIniciar conf = new ConfigIniciar();
+		
+		conf.aplicarConfiguracoes();
+		System.out.println(Configure.getInstance().getDestinoUpload());
 		btnPerquisar.setEnabled(false);
 
 		List<String> listIp = new Centralizador().getIpDisponivel();
@@ -284,12 +332,10 @@ public class TelaCliente extends JFrame implements IServer {
 
 	}
 
-
-
 	protected void iniciarServico() {
 
 		List<Arquivo> lista = new ArrayList<>();
-		
+
 		String strPorta = txtPorta.getText();
 		String host = comboip.getSelectedItem().toString();
 		String nome = txtnome.getText();
@@ -298,22 +344,22 @@ public class TelaCliente extends JFrame implements IServer {
 		if (!strPorta.matches("[0-9]+") || strPorta.length() > 5) {
 			JOptionPane.showMessageDialog(this, "A porta deve ser um valor numérico de no máximo 5 dígitos!");
 			return;
-		}				
+		}
 		try {
-					registry = LocateRegistry.getRegistry(host, intPorta);
+			registry = LocateRegistry.getRegistry(host, intPorta);
 
-					servidor = (IServer) registry.lookup(IServer.NOME_SERVICO);
-					//cliente = (IServer) UnicastRemoteObject.exportObject(this, 0);
-					
-					c.setIp(host);
-					c.setPorta(intPorta);
-					c.setNome(nome);
-					
-					servidor.registrarCliente(c);
-					ListarArquivos la = new ListarArquivos();
-					lista = la.listarArquivos();
-					servidor.publicarListaArquivos(c, lista);
-					
+			servidor = (IServer) registry.lookup(IServer.NOME_SERVICO);
+			// cliente = (IServer) UnicastRemoteObject.exportObject(this, 0);
+
+			c.setIp(host);
+			c.setPorta(intPorta);
+			c.setNome(nome);
+
+			servidor.registrarCliente(c);
+			ListarArquivos la = new ListarArquivos();
+			lista = la.listarArquivos();
+			servidor.publicarListaArquivos(c, lista);
+
 			iniciobotoes();
 
 		} catch (RemoteException e) {
@@ -321,7 +367,7 @@ public class TelaCliente extends JFrame implements IServer {
 		} catch (NotBoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
 	}
 
 	private void iniciobotoes() {
@@ -345,13 +391,16 @@ public class TelaCliente extends JFrame implements IServer {
 		txtpesquisa.setEditable(false);
 		btnConectar.setEnabled(true);
 	}
-	
+
 	private void mostrar(String string) {
 		System.out.println(string);
 	}
 
 	private Map<Cliente, List<Arquivo>> arquivosDosClientes = new HashMap<>();
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy H:mm:ss:SSS");
+	private JMenuBar menuBar;
+	private JMenu mnNewMenu;
+	private JMenuItem mntmConfigurar;
 
 	@Override
 	public void registrarCliente(Cliente c) throws RemoteException {
@@ -366,17 +415,16 @@ public class TelaCliente extends JFrame implements IServer {
 
 	@Override
 	public Map<Cliente, List<Arquivo>> procurarArquivo(String nome) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return arquivosDosClientes;
 	}
 
 	@Override
 	public byte[] baixarArquivo(Arquivo arq) throws RemoteException {
-			ManipuladorDeArquivos mda = new ManipuladorDeArquivos();
-			byte[] dados = mda.leia(arq); 
+		ManipuladorDeArquivos mda = new ManipuladorDeArquivos();
+		byte[] dados = mda.leia(new File(arq.getNomeArquivo()));
 		return dados;
 	}
-
 
 	@Override
 	public void desconectar(Cliente c) throws RemoteException {

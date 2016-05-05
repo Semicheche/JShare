@@ -4,25 +4,32 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import javax.crypto.AEADBadTagException;
 import javax.swing.text.BadLocationException;
 
 import br.dagostini.jshare.comum.pojos.Arquivo;
+import br.dagostini.jshare.comum.pojos.Configure;
 import br.dagostini.jshare.comum.pojos.Diretorio;
+import br.dagostini.jshare.comun.Cliente;
+import br.univel.cliente.ConfigIniciar;
 
 public class ListarArquivos {
 	
 	private List<Arquivo> listaArquivos = new ArrayList<>();
 
 	public List<Arquivo> listarArquivos() {
-
-		File dirStart = new File("C:\\Upload");
-
+		
+		
+		File dirStart = new File(Configure.getInstance().getDestinoUpload());
+		
 		List<Diretorio> listaDiretorios = new ArrayList<>();
 		for (File file : dirStart.listFiles()) {
 			if (file.isFile()) {
 				Arquivo arq = new Arquivo();
-				arq.setNome(file.getName());
+				arq.setNomeArquivo(file.getName());
 				arq.setTamanho(file.length());
 				listaArquivos.add(arq);
 			} else {
@@ -35,33 +42,8 @@ public class ListarArquivos {
 		return listaArquivos;
 	}
 	
-// public void pesquisa(String string){
-//	try {
-//
-//		String nome = string;
-//
-//		Object listArquivos;
-//
-//		for (List<Arquivo> list : listArquivos) {
-//			String dadoBuscado = nome;
-//			String nomedoArquivo = "";
-//			for (int i = 0; i < list.size(); i++) {
-//				nomedoArquivo = list.get(i).getNome();
-//				if (string.getText().isEmpty())
-//					return;
-//				if (nome.equals(nomedoArquivo.substring(0, nome.length())))
-//					string.getDocument().insertString(string.getCaretPosition(),
-//							nomedoArquivo.toString().substring(nome.length(), nomedoArquivo.length()),
-//							null);
-//
-//			}
-//
-//		}
-//
-//	} catch (RemoteException e) {
-//		e.printStackTrace();
-//	} catch (BadLocationException e) {
-//		e.printStackTrace();
-//	} 
-// }
+	public File pegarArquivo(String nome){
+		return new File("C:\\Upload\\"+ nome);
+	}
+	
 }

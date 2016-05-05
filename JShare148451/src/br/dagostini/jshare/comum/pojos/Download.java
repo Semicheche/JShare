@@ -4,12 +4,19 @@ import java.awt.Component;
 
 public class Download {
 	
+	private String nome;
 	private String origem;
 	private String destino;
 	private float porgresso;
 	private String ip;
-	private Component buttom;
+	private Arquivo arquivo;
 	
+	public String getNome() {
+		return nome;
+	}
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
 	public String getOrigem() {
 		return origem;
 	}
@@ -34,11 +41,11 @@ public class Download {
 	public void setIp(String ip) {
 		this.ip = ip;
 	}
-	public Component getButtom() {
-		return buttom;
+	public Arquivo getArquivo() {
+		return arquivo;
 	}
-	public void setButtom(Component buttom) {
-		this.buttom = buttom;
+	public void setArquivo(Arquivo arquivo) {
+		this.arquivo = arquivo;
 	}
 
 }

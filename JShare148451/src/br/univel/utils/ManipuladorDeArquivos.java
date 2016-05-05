@@ -7,9 +7,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
+import br.dagostini.jshare.comum.pojos.Arquivo;
+
 public class ManipuladorDeArquivos {
 	
+	
 	public void escreva(File file, byte[] dados) {
+		int i = 0;
 		try {
 			Files.write(Paths.get(file.getPath()), dados, StandardOpenOption.CREATE);
 		} catch (IOException e) {
@@ -18,9 +22,9 @@ public class ManipuladorDeArquivos {
 		
 	}
 	
-	public byte[] leia(Object arq) {
+	public byte[] leia(File arq) {
 		
-		Path path = Paths.get(((File) arq).getPath());
+		Path path = Paths.get(arq.getPath());
 		try {
 			byte[] dados = Files.readAllBytes(path);
 			return dados;

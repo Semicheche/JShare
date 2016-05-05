@@ -9,6 +9,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import br.dagostini.jshare.comum.pojos.Configure;
 import br.dagostini.jshare.comun.Cliente;
 import br.dagostini.jshare.comun.IServer;
 import br.univel.centralizador.Centralizador;
@@ -20,6 +21,8 @@ import javax.swing.JComboBox;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 import java.awt.Font;
@@ -32,6 +35,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.awt.event.ActionEvent;
+import javax.swing.JCheckBox;
 
 public class ConfigIniciar extends JDialog {
 
@@ -40,13 +44,18 @@ public class ConfigIniciar extends JDialog {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private static final ArrayList<Configure> list = new ArrayList<>();
 	private final JPanel contentPanel = new JPanel();
-	private JTextField txtPorta;
-	private JComboBox comboIp;
 	private Registry registry;
 	private String host;
 	Remote servidor;
-	private JTextField txtnome;
+	private JTextField txtupload;
+	private JTextField txtdonwload;
+	private JCheckBox chckbxAlterarAPasta;
+	private String upload;
+	private String download;
+	private JLabel lblDownload;
+	private JLabel lblUpload;
 
 
 	/**
@@ -57,9 +66,18 @@ public class ConfigIniciar extends JDialog {
 			ConfigIniciar dialog = new ConfigIniciar();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
+			dialog.configurar(list);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void configurar(ArrayList<Configure> list) {
+		for (Configure obj : list) {
+			txtdonwload.setText(obj.getDestinoDownload());
+			txtupload.setText(obj.getDestinoUpload());
+		}
+		
 	}
 
 	/**
@@ -74,12 +92,12 @@ public class ConfigIniciar extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		GridBagLayout gbl_contentPanel = new GridBagLayout();
 		gbl_contentPanel.columnWidths = new int[] { 29, 0, 38, 0, 0 };
-		gbl_contentPanel.rowHeights = new int[] { 0, 0, 0, 0 };
+		gbl_contentPanel.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gbl_contentPanel.columnWeights = new double[] { 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
-		gbl_contentPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gbl_contentPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		contentPanel.setLayout(gbl_contentPanel);
 		{
-			JLabel lblConfiguraeDeConexes = new JLabel("Configuraçõe de Conexão");
+			JLabel lblConfiguraeDeConexes = new JLabel("Configuraçõe de Download");
 			lblConfiguraeDeConexes.setFont(new Font("Tahoma", Font.BOLD, 14));
 			GridBagConstraints gbc_lblConfiguraeDeConexes = new GridBagConstraints();
 			gbc_lblConfiguraeDeConexes.insets = new Insets(0, 0, 5, 5);
@@ -88,69 +106,105 @@ public class ConfigIniciar extends JDialog {
 			contentPanel.add(lblConfiguraeDeConexes, gbc_lblConfiguraeDeConexes);
 		}
 		{
-			JLabel lblNome = new JLabel("Nome:");
+			chckbxAlterarAPasta = new JCheckBox("Alterar a pastas de destino");
+			chckbxAlterarAPasta.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					ablilitarEdicaoPastas();
+				}
+			});
+			GridBagConstraints gbc_chckbxAlterarAPasta = new GridBagConstraints();
+			gbc_chckbxAlterarAPasta.insets = new Insets(0, 0, 5, 5);
+			gbc_chckbxAlterarAPasta.gridx = 1;
+			gbc_chckbxAlterarAPasta.gridy = 1;
+			contentPanel.add(chckbxAlterarAPasta, gbc_chckbxAlterarAPasta);
+		}
+		{
+			JLabel lblNewLabel = new JLabel("Default:");
+			GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+			gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
+			gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
+			gbc_lblNewLabel.gridx = 0;
+			gbc_lblNewLabel.gridy = 2;
+			contentPanel.add(lblNewLabel, gbc_lblNewLabel);
+		}
+		{
+			lblUpload = new JLabel("C:\\\\Uploald");
+			GridBagConstraints gbc_lblUpload = new GridBagConstraints();
+			gbc_lblUpload.anchor = GridBagConstraints.WEST;
+			gbc_lblUpload.insets = new Insets(0, 0, 5, 5);
+			gbc_lblUpload.gridx = 1;
+			gbc_lblUpload.gridy = 2;
+			contentPanel.add(lblUpload, gbc_lblUpload);
+		}
+		{
+			JLabel lblNome = new JLabel("Pasta de Upload");
 			GridBagConstraints gbc_lblNome = new GridBagConstraints();
 			gbc_lblNome.insets = new Insets(0, 0, 5, 5);
 			gbc_lblNome.gridx = 0;
-			gbc_lblNome.gridy = 1;
+			gbc_lblNome.gridy = 3;
 			contentPanel.add(lblNome, gbc_lblNome);
 		}
 		{
-			txtnome = new JTextField();
-			GridBagConstraints gbc_txtnome = new GridBagConstraints();
-			gbc_txtnome.insets = new Insets(0, 0, 5, 5);
-			gbc_txtnome.fill = GridBagConstraints.HORIZONTAL;
-			gbc_txtnome.gridx = 1;
-			gbc_txtnome.gridy = 1;
-			contentPanel.add(txtnome, gbc_txtnome);
-			txtnome.setColumns(10);
+			txtupload = new JTextField("");
+			txtupload.setEditable(false);
+			txtupload.setEnabled(false);
+			GridBagConstraints gbc_txtupload = new GridBagConstraints();
+			gbc_txtupload.gridwidth = 3;
+			gbc_txtupload.insets = new Insets(0, 0, 5, 0);
+			gbc_txtupload.fill = GridBagConstraints.HORIZONTAL;
+			gbc_txtupload.gridx = 1;
+			gbc_txtupload.gridy = 3;
+			contentPanel.add(txtupload, gbc_txtupload);
+			txtupload.setColumns(10);
 		}
 		{
-			JLabel lblIp = new JLabel("IP:");
-			GridBagConstraints gbc_lblIp = new GridBagConstraints();
-			gbc_lblIp.insets = new Insets(0, 0, 0, 5);
-			gbc_lblIp.anchor = GridBagConstraints.EAST;
-			gbc_lblIp.gridx = 0;
-			gbc_lblIp.gridy = 2;
-			contentPanel.add(lblIp, gbc_lblIp);
+			JLabel lblNewLabel_2 = new JLabel("Default:");
+			GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
+			gbc_lblNewLabel_2.anchor = GridBagConstraints.EAST;
+			gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
+			gbc_lblNewLabel_2.gridx = 0;
+			gbc_lblNewLabel_2.gridy = 4;
+			contentPanel.add(lblNewLabel_2, gbc_lblNewLabel_2);
 		}
 		{
-			comboIp = new JComboBox();
-			GridBagConstraints gbc_comboIp = new GridBagConstraints();
-			gbc_comboIp.insets = new Insets(0, 0, 0, 5);
-			gbc_comboIp.fill = GridBagConstraints.HORIZONTAL;
-			gbc_comboIp.gridx = 1;
-			gbc_comboIp.gridy = 2;
-			contentPanel.add(comboIp, gbc_comboIp);
+			lblDownload = new JLabel("C:\\\\Donwload");
+			GridBagConstraints gbc_lblDownload = new GridBagConstraints();
+			gbc_lblDownload.anchor = GridBagConstraints.WEST;
+			gbc_lblDownload.insets = new Insets(0, 0, 5, 5);
+			gbc_lblDownload.gridx = 1;
+			gbc_lblDownload.gridy = 4;
+			contentPanel.add(lblDownload, gbc_lblDownload);
 		}
 		{
-			JLabel lblPorta = new JLabel("Porta:");
-			GridBagConstraints gbc_lblPorta = new GridBagConstraints();
-			gbc_lblPorta.insets = new Insets(0, 0, 0, 5);
-			gbc_lblPorta.anchor = GridBagConstraints.EAST;
-			gbc_lblPorta.gridx = 2;
-			gbc_lblPorta.gridy = 2;
-			contentPanel.add(lblPorta, gbc_lblPorta);
+			JLabel lblPastaDeDownload = new JLabel("Pasta de Download");
+			GridBagConstraints gbc_lblPastaDeDownload = new GridBagConstraints();
+			gbc_lblPastaDeDownload.insets = new Insets(0, 0, 5, 5);
+			gbc_lblPastaDeDownload.gridx = 0;
+			gbc_lblPastaDeDownload.gridy = 5;
+			contentPanel.add(lblPastaDeDownload, gbc_lblPastaDeDownload);
 		}
 		{
-			txtPorta = new JTextField();
-			GridBagConstraints gbc_txtPorta = new GridBagConstraints();
-			gbc_txtPorta.fill = GridBagConstraints.HORIZONTAL;
-			gbc_txtPorta.gridx = 3;
-			gbc_txtPorta.gridy = 2;
-			contentPanel.add(txtPorta, gbc_txtPorta);
-			txtPorta.setColumns(10);
+			txtdonwload = new JTextField();
+			txtdonwload.setEnabled(false);
+			txtdonwload.setEditable(false);
+			GridBagConstraints gbc_txtdonwload = new GridBagConstraints();
+			gbc_txtdonwload.gridwidth = 3;
+			gbc_txtdonwload.insets = new Insets(0, 0, 5, 0);
+			gbc_txtdonwload.fill = GridBagConstraints.HORIZONTAL;
+			gbc_txtdonwload.gridx = 1;
+			gbc_txtdonwload.gridy = 5;
+			contentPanel.add(txtdonwload, gbc_txtdonwload);
+			txtdonwload.setColumns(10);
 		}
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("Conectar");
+				JButton okButton = new JButton("Aplicar");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-							
-						iniciarServico();						
+						aplicarConfiguracoes();
 					}
 				});
 				okButton.setActionCommand("OK");
@@ -169,42 +223,42 @@ public class ConfigIniciar extends JDialog {
 				buttonPane.add(cancelButton);
 			}
 		}
-		configurar();
+		
+	
 	}
 
 
-	protected void iniciarServico(){
-
-		String strPorta = txtPorta.getText();
-
-		if (!strPorta.matches("[0-9]+") || strPorta.length() > 5) {
-			JOptionPane.showMessageDialog(this, "A porta deve ser um valor numérico de no máximo 5 dígitos!");
-			return;
-		}
-
-		int intPorta = Integer.parseInt(strPorta);
-
-			try {
-				registry = LocateRegistry.getRegistry(host, intPorta);
-				servidor = registry.lookup(IServer.NOME_SERVICO);
-
+	public void aplicarConfiguracoes() {
 				
-				// servidor.publicarListaArquivos(c,);
+		Configure conf = Configure.getInstance();
+		if(!txtupload.equals(null))
+			upload = lblUpload.getText();
+		else
+			upload = txtupload.getText();
+		
+		if(!txtdonwload.equals(null))
+			download = lblDownload.getText();
+		else
+			download = txtdonwload.getText();
+			
+		conf.setDestinoUpload(upload);
+		conf.setDestinoDownload(download);
+		
+	}
 
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			} catch (NotBoundException e) {
-				e.printStackTrace();
-			}
+	protected void ablilitarEdicaoPastas() {
+		if(chckbxAlterarAPasta.isSelected()){
+			txtdonwload.setEditable(true);
+			txtdonwload.setEnabled(true);
+			txtupload.setEditable(true);
+			txtupload.setEnabled(true);
+		}else{
+			txtdonwload.setEditable(false);
+			txtdonwload.setEnabled(false);
+			txtupload.setEditable(false);
+			txtupload.setEnabled(false);
 		}
-
-
-	private void configurar() {
-
-		List<String> listIp = new Centralizador().getIpDisponivel();
-		comboIp.setModel(new DefaultComboBoxModel<String>(new Vector<String>(listIp)));
-		comboIp.setSelectedIndex(0);
-
+		
 	}
 
 }
